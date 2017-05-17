@@ -787,7 +787,6 @@ export default class VideoPlayer extends Component {
                         { this.renderBack() }
                         <View style={ styles.controls.pullRight }>
                             { this.renderVolume() }
-                            { this.renderFullscreen() }
                         </View>
                     </View>
                 </Image>
