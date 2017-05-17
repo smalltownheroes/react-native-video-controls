@@ -785,9 +785,6 @@ export default class VideoPlayer extends Component {
                 ]}>
                     <View style={ styles.controls.topControlGroup }>
                         { this.renderBack() }
-                        <View style={ styles.controls.pullRight }>
-                            { this.renderVolume() }
-                        </View>
                     </View>
                 </Image>
             </Animated.View>
@@ -814,25 +811,7 @@ export default class VideoPlayer extends Component {
     renderVolume() {
         return (
             <View style={ styles.volume.container }>
-                <View style={[
-                    styles.volume.fill,
-                    { width: this.state.volumeFillWidth }
-                ]}/>
-                <View style={[
-                    styles.volume.track,
-                    { width: this.state.volumeTrackWidth }
-                ]}/>
-                <View
-                    style={[
-                        styles.volume.handle,
-                        {
-                            left: this.state.volumePosition
-                        }
-                    ]}
-                    { ...this.player.volumePanResponder.panHandlers }
-                >
-                    <Image style={ styles.volume.icon } source={ require( './assets/img/volume.png' ) } />
-                </View>
+                <Image style={ styles.volume.icon } source={ require( './assets/img/volume.png' ) } />
             </View>
         );
     }
@@ -866,18 +845,21 @@ export default class VideoPlayer extends Component {
                 style={[ styles.controls.column, styles.controls.vignette,
             ]}>
                 <View style={[
-                    styles.player.container,
-                    styles.controls.seekbar
-                ]}>
-                    { this.renderSeekbar() }
-                </View>
-                <View style={[
                     styles.controls.column,
                     styles.controls.bottomControlGroup
                 ]}>
-                    { this.renderPlayPause() }
-                    { this.renderTitle() }
-                    { this.renderTimer() }
+                    <View style={{ flex: 0.1, marginLeft: 10 }}>
+                        { this.renderPlayPause() }
+                    </View>
+                    <View style={{ flex: 0.5 }}>
+                        { this.renderSeekbar() }
+                    </View>
+                    <View style={{ flex: 0.2, marginLeft: -15 }}>
+                        { this.renderTimer() }
+                    </View>
+                    <View style={{ flex: 0.2 }}>
+                        { this.renderVolume() }
+                    </View>
                 </View>
             </Image>
             </Animated.View>
@@ -911,10 +893,23 @@ export default class VideoPlayer extends Component {
                         ]}
                         { ...this.player.seekPanResponder.panHandlers }
                     >
-                        <View style={[
-                            styles.seek.circle,
-                            { backgroundColor: this.props.seekColor || '#FFF' } ]}
-                        />
+                        <View
+                            style={{
+                                top: 7,
+                                left: 7,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <View style={[
+                                styles.seek.circle,
+                                { position: 'absolute', backgroundColor: this.props.seekColor || '#FFF' } ]}
+                            />
+                            <View style={[
+                                styles.seek.outerCircle,
+                                { position: 'absolute', backgroundColor: this.props.seekColor || '#FFF' } ]}
+                            />
+                        </View>
                     </View>
                 </View>
             </View>
@@ -1117,7 +1112,7 @@ const styles = {
             resizeMode: 'stretch',
         },
         control: {
-            padding: 16,
+            padding: 10,
         },
         text: {
             backgroundColor: 'transparent',
@@ -1128,7 +1123,7 @@ const styles = {
         pullRight: {
             flexDirection: 'row',
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'flex-end',
         },
         top: {
             flex: 1,
@@ -1151,7 +1146,7 @@ const styles = {
         topControlGroup: {
             alignSelf: 'stretch',
             alignItems: 'center',
-            justifyContent: 'space-between',
+            justifyContent: 'flex-end',
             flexDirection: 'row',
             width: null,
             margin: 12,
@@ -1162,9 +1157,9 @@ const styles = {
             alignItems: 'center',
             justifyContent: 'space-between',
             flexDirection: 'row',
-            marginLeft: 12,
-            marginRight: 12,
-            marginBottom: 0,
+            marginLeft: 5,
+            marginRight: 5,
+            marginBottom: 3,
         },
         volume: {
             flexDirection: 'row',
@@ -1191,6 +1186,7 @@ const styles = {
             backgroundColor: 'transparent',
             color: '#FFF',
             fontSize: 11,
+            fontWeight: 'bold',
             textAlign: 'right',
         },
     }),
@@ -1200,8 +1196,8 @@ const styles = {
             justifyContent: 'center',
             backgroundColor: '#333',
             height: 4,
-            marginLeft: 28,
-            marginRight: 28,
+            marginLeft: 25,
+            marginRight: 0,
         },
         fill: {
             alignSelf: 'flex-start',
@@ -1220,6 +1216,12 @@ const styles = {
             height: 12,
             width: 12,
         },
+        outerCircle: {
+            borderRadius: 60,
+            height: 30,
+            width: 30,
+            opacity: 0.4,
+        }
     }),
     volume: StyleSheet.create({
         container: {
