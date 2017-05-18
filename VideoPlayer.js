@@ -835,7 +835,6 @@ export default class VideoPlayer extends Component {
                     style={[ styles.controls.column, styles.controls.vignette,
                 ]}>
                     <View style={ styles.controls.topControlGroup }>
-                        { this.renderVolumeHandler() }
                         { this.renderBack() }
                     </View>
                 </Image>
@@ -861,6 +860,7 @@ export default class VideoPlayer extends Component {
         if (this.state.showVolumeControl) {
             return (
                 <View
+                    style={ styles.volume.popover }
                     { ...this.player.volumePanResponder.panHandlers }
                 >
                     <View style={ styles.volume.container }>
@@ -1111,6 +1111,7 @@ export default class VideoPlayer extends Component {
                     { this.renderTopControls() }
                     { this.renderLoader() }
                     { this.renderBottomControls() }
+                    { this.renderVolumeHandler() }
                 </View>
             </TouchableWithoutFeedback>
         );
@@ -1308,13 +1309,22 @@ const styles = {
             alignItems: 'center',
             justifyContent: 'flex-start',
             flexDirection: 'row',
-            marginLeft: 20,
-            marginRight: 20,
+            marginLeft: 5,
+            marginRight: 5,
+            marginLeft: 5,
+            marginTop: 5,
+            marginBottom: 5,
             width: 100,
-            backgroundColor: '#999fa3',
+            backgroundColor: '#dbe2e9',
+        },
+        popover: {
+            position: 'absolute',
+            bottom: 60,
+            right: 40,
+            backgroundColor: '#FFF',
         },
         track: {
-            backgroundColor: '#dbe2e9',
+            backgroundColor: '#999fa3',
             height: 20,
         },
     })
