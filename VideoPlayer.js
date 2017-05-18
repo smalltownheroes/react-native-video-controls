@@ -685,7 +685,6 @@ export default class VideoPlayer extends Component {
              * onEnd callback
              */
             onPanResponderRelease: ( evt, gestureState ) => {
-                console.log('-----onPanResponderRelease---------->');
                 const time = this.calculateTimeFromSeekerPosition();
                 let state = this.state;
                 if ( time >= state.duration && ! state.loading ) {
@@ -709,7 +708,19 @@ export default class VideoPlayer extends Component {
             onStartShouldSetPanResponder: ( evt, gestureState ) => true,
             onMoveShouldSetPanResponder: ( evt, gestureState ) => true,
             onPanResponderGrant: ( evt, gestureState ) => {
+                console.log('-----GRANT---------->', evt.nativeEvent, gestureState);
                 this.clearControlTimeout();
+                let state = this.state;
+                const touchPosition = evt.nativeEvent.locationX;
+                this.setVolumePosition( touchPosition );
+                state.volume = evt.nativeEvent.locationX / 100;
+                if ( state.volume <= 0 ) {
+                    state.muted = true;
+                }
+                else {
+                    state.muted = false;
+                }
+                this.setState( state );
             },
 
             /**
@@ -718,19 +729,16 @@ export default class VideoPlayer extends Component {
              * to avoid that weird static-y sound.
              */
             onPanResponderMove: ( evt, gestureState ) => {
+                console.log('-----MOVE---------->', evt.nativeEvent, gestureState);
                 let state = this.state;
-                const position = this.state.volumeOffset + gestureState.dx;
-
-                this.setVolumePosition( position );
-                state.volume = this.calculateVolumeFromVolumePosition();
-
+                const touchPosition = evt.nativeEvent.locationX;
+                this.setVolumePosition( touchPosition );
+                state.volume = evt.nativeEvent.locationX / 100;
                 if ( state.volume <= 0 ) {
                     state.muted = true;
-                }
-                else {
+                } else {
                     state.muted = false;
                 }
-
                 this.setState( state );
             },
 
@@ -738,10 +746,36 @@ export default class VideoPlayer extends Component {
              * Update the offset...
              */
             onPanResponderRelease: ( evt, gestureState ) => {
-                let state = this.state;
-                state.volumeOffset = state.volumePosition;
-                this.setControlTimeout();
-                this.setState( state );
+                // console.log('-----RELEASE---------->', evt.nativeEvent, gestureState);
+                // let state = this.state;
+                // if (gestureState.moveX > 0) {
+                //     state.volumeOffset = state.volumePosition;
+                //     this.setControlTimeout();
+                //     this.setState( state );
+                // } else if (evt.nativeEvent.locationX !== 0) {
+                //  // console.log('-------state-------->', state);
+                //  const touchPosition = evt.nativeEvent.locationX;
+                //  this.setVolumePosition( touchPosition );
+                //     state.volume = evt.nativeEvent.locationX / 100;
+
+                //     if ( state.volume <= 0 ) {
+                //         state.muted = true;
+                //     }
+                //     else {
+                //         state.muted = false;
+                //     }
+
+                //     this.setState( state );
+                //  // this.setVolumePosition( evt.nativeEvent.locationX );
+                //  //    state.volume = this.calculateVolumeFromVolumePosition();
+                //  //    if ( state.volume <= 0 ) {
+                //  //        state.muted = true;
+                //  //    }
+                //  //    else {
+                //  //        state.muted = false;
+                //  //    }
+                //  //    this.setState( state );
+                // }
             }
         });
     }
@@ -768,7 +802,7 @@ export default class VideoPlayer extends Component {
         return (
             <TouchableHighlight
                 underlayColor="transparent"
-                activeOpacity={ 0.3 }
+                activeOpacity={ 1 }
                 onPress={()=>{
                     this.resetControlTimeout();
                     callback();
@@ -827,19 +861,14 @@ export default class VideoPlayer extends Component {
         if (this.state.showVolumeControl) {
             return (
                 <View
-                    style={ styles.volume.container }
                     { ...this.player.volumePanResponder.panHandlers }
                 >
-                    <View
-                        style={[
-                            styles.volume.fill,
+                    <View style={ styles.volume.container }>
+                        <View style={[
+                            styles.volume.track,
                             { width: this.state.volumeFillWidth }
-                        ]}
-                    />
-                    <View style={[
-                        styles.volume.track,
-                        { width: this.state.volumeTrackWidth }
-                    ]}/>
+                        ]}/>
+                    </View>
                 </View>
             );
         }
@@ -850,7 +879,7 @@ export default class VideoPlayer extends Component {
      * Render the volume slider and attach the pan handlers
      */
     renderVolume() {
-        let source = this.state.volume === 0 ? require( './assets/img/nosound.png' ) : require( './assets/img/volume.png' );
+        let source = this.state.volume <= 0 ? require( './assets/img/nosound.png' ) : require( './assets/img/volume.png' );
         return this.renderControl(
             <Image source={ source } />,
             this.methods.toggleVolume,
@@ -1282,13 +1311,10 @@ const styles = {
             marginLeft: 20,
             marginRight: 20,
             width: 100,
+            backgroundColor: '#999fa3',
         },
         track: {
             backgroundColor: '#dbe2e9',
-            height: 20,
-        },
-        fill: {
-            backgroundColor: '#999fa3',
             height: 20,
         },
     })
