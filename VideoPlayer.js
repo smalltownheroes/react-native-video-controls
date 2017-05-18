@@ -251,7 +251,7 @@ export default class VideoPlayer extends Component {
      */
     setControlTimeout() {
         this.player.controlTimeout = setTimeout( ()=> {
-            // this._hideControls();
+            this._hideControls();
         }, this.player.controlTimeoutDelay );
     }
 
@@ -356,7 +356,6 @@ export default class VideoPlayer extends Component {
         let state = this.state;
         state.showControls = false;
         this.hideControlAnimation();
-
         this.setState( state );
     }
 
@@ -367,7 +366,7 @@ export default class VideoPlayer extends Component {
     _toggleControls() {
         let state = this.state;
         state.showControls = ! state.showControls;
-
+        state.showVolumeControl = false;
         if ( state.showControls ) {
             this.showControlAnimation();
             this.setControlTimeout();
@@ -708,7 +707,6 @@ export default class VideoPlayer extends Component {
             onStartShouldSetPanResponder: ( evt, gestureState ) => true,
             onMoveShouldSetPanResponder: ( evt, gestureState ) => true,
             onPanResponderGrant: ( evt, gestureState ) => {
-                console.log('-----GRANT---------->', evt.nativeEvent, gestureState);
                 this.clearControlTimeout();
                 let state = this.state;
                 const touchPosition = evt.nativeEvent.locationX;
@@ -716,8 +714,7 @@ export default class VideoPlayer extends Component {
                 state.volume = evt.nativeEvent.locationX / 100;
                 if ( state.volume <= 0 ) {
                     state.muted = true;
-                }
-                else {
+                } else {
                     state.muted = false;
                 }
                 this.setState( state );
@@ -729,7 +726,6 @@ export default class VideoPlayer extends Component {
              * to avoid that weird static-y sound.
              */
             onPanResponderMove: ( evt, gestureState ) => {
-                console.log('-----MOVE---------->', evt.nativeEvent, gestureState);
                 let state = this.state;
                 const touchPosition = evt.nativeEvent.locationX;
                 this.setVolumePosition( touchPosition );
@@ -746,36 +742,6 @@ export default class VideoPlayer extends Component {
              * Update the offset...
              */
             onPanResponderRelease: ( evt, gestureState ) => {
-                // console.log('-----RELEASE---------->', evt.nativeEvent, gestureState);
-                // let state = this.state;
-                // if (gestureState.moveX > 0) {
-                //     state.volumeOffset = state.volumePosition;
-                //     this.setControlTimeout();
-                //     this.setState( state );
-                // } else if (evt.nativeEvent.locationX !== 0) {
-                //  // console.log('-------state-------->', state);
-                //  const touchPosition = evt.nativeEvent.locationX;
-                //  this.setVolumePosition( touchPosition );
-                //     state.volume = evt.nativeEvent.locationX / 100;
-
-                //     if ( state.volume <= 0 ) {
-                //         state.muted = true;
-                //     }
-                //     else {
-                //         state.muted = false;
-                //     }
-
-                //     this.setState( state );
-                //  // this.setVolumePosition( evt.nativeEvent.locationX );
-                //  //    state.volume = this.calculateVolumeFromVolumePosition();
-                //  //    if ( state.volume <= 0 ) {
-                //  //        state.muted = true;
-                //  //    }
-                //  //    else {
-                //  //        state.muted = false;
-                //  //    }
-                //  //    this.setState( state );
-                // }
             }
         });
     }
@@ -936,6 +902,7 @@ export default class VideoPlayer extends Component {
                     </View>
                 </View>
             </Image>
+            { this.renderVolumeHandler() }
             </Animated.View>
         );
     }
@@ -967,23 +934,10 @@ export default class VideoPlayer extends Component {
                         ]}
                         { ...this.player.seekPanResponder.panHandlers }
                     >
-                        <View
-                            style={{
-                                top: 7,
-                                left: 7,
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                            }}
-                        >
-                            <View style={[
-                                styles.seek.circle,
-                                { position: 'absolute', backgroundColor: this.props.seekColor || '#FFF' } ]}
-                            />
-                            <View style={[
-                                styles.seek.outerCircle,
-                                { position: 'absolute', backgroundColor: this.props.seekColor || '#FFF' } ]}
-                            />
-                        </View>
+                        <Image
+                            source={require('./assets/img/play-thumb.png')}
+                            style={{ top: -8, left: -7 }}
+                        />
                     </View>
                 </View>
             </View>
@@ -1111,7 +1065,6 @@ export default class VideoPlayer extends Component {
                     { this.renderTopControls() }
                     { this.renderLoader() }
                     { this.renderBottomControls() }
-                    { this.renderVolumeHandler() }
                 </View>
             </TouchableWithoutFeedback>
         );
@@ -1291,17 +1244,6 @@ const styles = {
             marginLeft: -24,
             padding: 16,
             paddingBottom: 4,
-        },
-        circle: {
-            borderRadius: 20,
-            height: 12,
-            width: 12,
-        },
-        outerCircle: {
-            borderRadius: 60,
-            height: 30,
-            width: 30,
-            opacity: 0.4,
         }
     }),
     volume: StyleSheet.create({
@@ -1320,7 +1262,7 @@ const styles = {
         popover: {
             position: 'absolute',
             bottom: 60,
-            right: 40,
+            right: 35,
             backgroundColor: '#FFF',
         },
         track: {
