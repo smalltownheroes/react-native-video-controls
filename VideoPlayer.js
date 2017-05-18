@@ -93,8 +93,7 @@ export default class VideoPlayer extends Component {
             volumePanResponder: PanResponder,
             seekPanResponder: PanResponder,
             controlTimeout: null,
-            volumeWidth: 150,
-            iconOffset: 0,
+            volumeWidth: 100,
             seekWidth: 0,
             ref: Video,
         };
@@ -414,7 +413,6 @@ export default class VideoPlayer extends Component {
     }
 
     _toggleVolume() {
-        console.log('--------------->', 'volume-pop-over');
         let state = this.state;
         state.showVolumeControl = ! state.showVolumeControl;
         this.setState( state );
@@ -547,17 +545,26 @@ export default class VideoPlayer extends Component {
     setVolumePosition( position = 0 ) {
         let state = this.state;
         position = this.constrainToVolumeMinMax( position );
-        state.volumePosition = position + this.player.iconOffset;
+        state.volumePosition = position;
         state.volumeFillWidth = position;
 
         state.volumeTrackWidth = this.player.volumeWidth - state.volumeFillWidth;
+
 
         if ( state.volumeFillWidth < 0 ) {
             state.volumeFillWidth = 0;
         }
 
-        if ( state.volumeTrackWidth > 150 ) {
-            state.volumeTrackWidth = 150;
+        if ( state.volumeTrackWidth < 0 ) {
+            state.volumeTrackWidth = 0;
+        }
+
+        if ( state.volumeTrackWidth > 100 ) {
+            state.volumeTrackWidth = 100;
+        }
+
+        if ( state.volumeFillWidth > 100 ) {
+            state.volumeFillWidth = 100;
         }
 
         this.setState( state );
@@ -587,7 +594,6 @@ export default class VideoPlayer extends Component {
      * @return {float} volume level based on volume handle position
      */
     calculateVolumeFromVolumePosition() {
-        console.log('-------this.state.volumePosition-------->', this.state.volumePosition);
         return this.state.volumePosition / this.player.volumeWidth;
     }
 
@@ -679,6 +685,7 @@ export default class VideoPlayer extends Component {
              * onEnd callback
              */
             onPanResponderRelease: ( evt, gestureState ) => {
+                console.log('-----onPanResponderRelease---------->');
                 const time = this.calculateTimeFromSeekerPosition();
                 let state = this.state;
                 if ( time >= state.duration && ! state.loading ) {
@@ -819,26 +826,20 @@ export default class VideoPlayer extends Component {
     renderVolumeHandler() {
         if (this.state.showVolumeControl) {
             return (
-                <View style={ styles.volume.container }>
-                    <View style={[
-                        styles.volume.fill,
-                        { width: this.state.volumeFillWidth }
-                    ]}/>
+                <View
+                    style={ styles.volume.container }
+                    { ...this.player.volumePanResponder.panHandlers }
+                >
+                    <View
+                        style={[
+                            styles.volume.fill,
+                            { width: this.state.volumeFillWidth }
+                        ]}
+                    />
                     <View style={[
                         styles.volume.track,
                         { width: this.state.volumeTrackWidth }
                     ]}/>
-                    <View
-                        style={[
-                            styles.volume.handle,
-                            {
-                                left: this.state.volumePosition
-                            }
-                        ]}
-                        { ...this.player.volumePanResponder.panHandlers }
-                    >
-                        <Image style={ styles.volume.icon } source={ require( './assets/img/expand.png' ) } />
-                    </View>
                 </View>
             );
         }
@@ -849,7 +850,6 @@ export default class VideoPlayer extends Component {
      * Render the volume slider and attach the pan handlers
      */
     renderVolume() {
-        console.log('---------this.state.volume------>', this.state.volume);
         let source = this.state.volume === 0 ? require( './assets/img/nosound.png' ) : require( './assets/img/volume.png' );
         return this.renderControl(
             <Image source={ source } />,
@@ -1279,25 +1279,17 @@ const styles = {
             alignItems: 'center',
             justifyContent: 'flex-start',
             flexDirection: 'row',
-            height: 1,
             marginLeft: 20,
             marginRight: 20,
-            width: 150,
+            width: 100,
         },
         track: {
-            backgroundColor: '#333',
-            height: 1,
-            marginLeft: 7,
+            backgroundColor: '#dbe2e9',
+            height: 20,
         },
         fill: {
-            backgroundColor: '#FFF',
-            height: 1,
+            backgroundColor: '#999fa3',
+            height: 20,
         },
-        handle: {
-            position: 'absolute',
-            marginTop: -24,
-            marginLeft: -24,
-            padding: 16,
-        }
     })
 };
