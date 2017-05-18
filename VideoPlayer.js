@@ -250,7 +250,7 @@ export default class VideoPlayer extends Component {
      */
     setControlTimeout() {
         this.player.controlTimeout = setTimeout( ()=> {
-            this._hideControls();
+            // this._hideControls();
         }, this.player.controlTimeoutDelay );
     }
 
@@ -430,10 +430,10 @@ export default class VideoPlayer extends Component {
      * based on if they want to see time remaining
      * or duration. Formatted to look as 00:00.
      */
-    calculateTime() {
-        if ( this.state.showTimeRemaining ) {
+    calculateTime(remaining) {
+        if ( remaining ) {
             const time = this.state.duration - this.state.currentTime;
-            return `-${ this.formatTime( time ) }`;
+            return `${ this.formatTime( time ) }`;
         }
         return `${ this.formatTime( this.state.currentTime ) }`;
     }
@@ -848,16 +848,19 @@ export default class VideoPlayer extends Component {
                     styles.controls.column,
                     styles.controls.bottomControlGroup
                 ]}>
-                    <View style={{ flex: 0.1, marginLeft: 10 }}>
+                    <View style={{ flex: 0.12 }}>
                         { this.renderPlayPause() }
                     </View>
-                    <View style={{ flex: 0.5 }}>
+                    <View style={{ flex: 0.15 }}>
+                        { this.renderTimer(false) }
+                    </View>
+                    <View style={{ flex: 0.46 }}>
                         { this.renderSeekbar() }
                     </View>
-                    <View style={{ flex: 0.2, marginLeft: -15 }}>
-                        { this.renderTimer() }
+                    <View style={{ flex: 0.15 }}>
+                        { this.renderTimer(true) }
                     </View>
-                    <View style={{ flex: 0.2 }}>
+                    <View style={{ flex: 0.12 }}>
                         { this.renderVolume() }
                     </View>
                 </View>
@@ -954,12 +957,12 @@ export default class VideoPlayer extends Component {
     /**
      * Show our timer.
      */
-    renderTimer() {
+    renderTimer(remaining) {
         return this.renderControl(
             <Text style={ styles.controls.timerText }>
-                { this.calculateTime() }
+                { this.calculateTime(remaining) }
             </Text>,
-            this.methods.toggleTimer,
+            () => {},
             styles.controls.timer
         );
     }
@@ -1112,7 +1115,7 @@ const styles = {
             resizeMode: 'stretch',
         },
         control: {
-            padding: 10,
+            padding: 5,
         },
         text: {
             backgroundColor: 'transparent',
@@ -1157,9 +1160,9 @@ const styles = {
             alignItems: 'center',
             justifyContent: 'space-between',
             flexDirection: 'row',
-            marginLeft: 5,
-            marginRight: 5,
-            marginBottom: 3,
+            marginLeft: 15,
+            marginRight: 15,
+            marginBottom: 10,
         },
         volume: {
             flexDirection: 'row',
@@ -1168,7 +1171,9 @@ const styles = {
             flexDirection: 'row',
         },
         playPause: {
-            width: 80,
+            alignItems: 'center',
+            justifyContent: 'center',
+            // width: 80,
         },
         title: {
             alignItems: 'center',
@@ -1180,14 +1185,16 @@ const styles = {
             textAlign: 'center',
         },
         timer: {
-            width: 80,
+            alignItems: 'center',
+            justifyContent: 'center',
+            // width: 80,
         },
         timerText: {
             backgroundColor: 'transparent',
             color: '#FFF',
             fontSize: 11,
             fontWeight: 'bold',
-            textAlign: 'right',
+            textAlign: 'center',
         },
     }),
     seek: StyleSheet.create({
@@ -1195,13 +1202,13 @@ const styles = {
             alignSelf: 'stretch',
             justifyContent: 'center',
             backgroundColor: '#333',
-            height: 4,
-            marginLeft: 25,
-            marginRight: 0,
+            height: 3,
+            marginLeft: 10,
+            marginRight: 10,
         },
         fill: {
             alignSelf: 'flex-start',
-            height: 2,
+            height: 3,
             width: 1,
         },
         handle: {
@@ -1229,9 +1236,9 @@ const styles = {
             justifyContent: 'flex-start',
             flexDirection: 'row',
             height: 1,
-            marginLeft: 20,
-            marginRight: 20,
-            width: 150,
+            // marginLeft: 25,
+            // marginRight: 25,
+            // width: 150,
         },
         track: {
             backgroundColor: '#333',
