@@ -913,33 +913,40 @@ export default class VideoPlayer extends Component {
     renderSeekbar() {
         return (
             <View
-                style={ styles.seek.track }
-                onLayout={ event => {
-                    this.player.seekerWidth = event.nativeEvent.layout.width;
+                style={{
+                    height: 30,
+                    justifyContent: 'center',
                 }}
             >
-                <View style={[
-                    styles.seek.fill,
-                    {
-                        width: this.state.seekerFillWidth,
-                        backgroundColor: this.props.seekColor || '#FFF'
-                    }
-                ]}>
-                    <View
-                        style={[
-                            styles.seek.handle,
-                            {
-                                left: this.state.seekerPosition
-                            }
-                        ]}
-                        { ...this.player.seekPanResponder.panHandlers }
-                    >
-                        <Image
-                            source={require('./assets/img/play-thumb.png')}
-                            style={{ top: -8, left: -7 }}
-                        />
+                <View
+                    style={ styles.seek.track }
+                    onLayout={ event => {
+                        this.player.seekerWidth = event.nativeEvent.layout.width;
+                    }}
+                >
+                    <View style={[
+                        styles.seek.fill,
+                        {
+                            width: this.state.seekerFillWidth,
+                            backgroundColor: this.props.seekColor || '#FFF'
+                        }
+                    ]}>
+                        <View
+                            style={[
+                                styles.seek.handle,
+                                {
+                                    left: this.state.seekerPosition
+                                }
+                            ]}
+                        >
+                        </View>
                     </View>
                 </View>
+                <Image
+                    source={require('./assets/img/play-thumb.png')}
+                    style={{ left: this.state.seekerPosition }}
+                    { ...this.player.seekPanResponder.panHandlers }
+                />
             </View>
         );
     }
@@ -1226,6 +1233,7 @@ const styles = {
     }),
     seek: StyleSheet.create({
         track: {
+            top: 16,
             alignSelf: 'stretch',
             justifyContent: 'center',
             backgroundColor: '#333',
@@ -1267,7 +1275,7 @@ const styles = {
         },
         track: {
             backgroundColor: '#999fa3',
-            height: 20,
+            height: 30,
         },
     })
 };
