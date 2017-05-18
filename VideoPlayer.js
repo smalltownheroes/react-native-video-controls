@@ -35,6 +35,7 @@ export default class VideoPlayer extends Component {
             isFullscreen: isFullscreen,
             showTimeRemaining: true,
             volumeTrackWidth: 0,
+            showVolumeControl: false,
             lastScreenPress: 0,
             volumeFillWidth: 0,
             seekerFillWidth: 0,
@@ -81,6 +82,7 @@ export default class VideoPlayer extends Component {
             togglePlayPause: this._togglePlayPause.bind( this ),
             toggleControls: this._toggleControls.bind( this ),
             toggleTimer: this._toggleTimer.bind( this ),
+            toggleVolume: this._toggleVolume.bind( this ),
         };
 
         /**
@@ -92,7 +94,7 @@ export default class VideoPlayer extends Component {
             seekPanResponder: PanResponder,
             controlTimeout: null,
             volumeWidth: 150,
-            iconOffset: 7,
+            iconOffset: 0,
             seekWidth: 0,
             ref: Video,
         };
@@ -411,6 +413,13 @@ export default class VideoPlayer extends Component {
         this.setState( state );
     }
 
+    _toggleVolume() {
+        console.log('--------------->', 'volume-pop-over');
+        let state = this.state;
+        state.showVolumeControl = ! state.showVolumeControl;
+        this.setState( state );
+    }
+
     /**
      * The default 'onBack' function pops the navigator
      * and as such the video player requires a
@@ -578,6 +587,7 @@ export default class VideoPlayer extends Component {
      * @return {float} volume level based on volume handle position
      */
     calculateVolumeFromVolumePosition() {
+        console.log('-------this.state.volumePosition-------->', this.state.volumePosition);
         return this.state.volumePosition / this.player.volumeWidth;
     }
 
@@ -784,6 +794,7 @@ export default class VideoPlayer extends Component {
                     style={[ styles.controls.column, styles.controls.vignette,
                 ]}>
                     <View style={ styles.controls.topControlGroup }>
+                        { this.renderVolumeHandler() }
                         { this.renderBack() }
                     </View>
                 </Image>
@@ -805,14 +816,45 @@ export default class VideoPlayer extends Component {
         );
     }
 
+    renderVolumeHandler() {
+        if (this.state.showVolumeControl) {
+            return (
+                <View style={ styles.volume.container }>
+                    <View style={[
+                        styles.volume.fill,
+                        { width: this.state.volumeFillWidth }
+                    ]}/>
+                    <View style={[
+                        styles.volume.track,
+                        { width: this.state.volumeTrackWidth }
+                    ]}/>
+                    <View
+                        style={[
+                            styles.volume.handle,
+                            {
+                                left: this.state.volumePosition
+                            }
+                        ]}
+                        { ...this.player.volumePanResponder.panHandlers }
+                    >
+                        <Image style={ styles.volume.icon } source={ require( './assets/img/expand.png' ) } />
+                    </View>
+                </View>
+            );
+        }
+        return null;
+    }
+
     /**
      * Render the volume slider and attach the pan handlers
      */
     renderVolume() {
-        return (
-            <View style={ styles.volume.container }>
-                <Image style={ styles.volume.icon } source={ require( './assets/img/volume.png' ) } />
-            </View>
+        console.log('---------this.state.volume------>', this.state.volume);
+        let source = this.state.volume === 0 ? require( './assets/img/nosound.png' ) : require( './assets/img/volume.png' );
+        return this.renderControl(
+            <Image source={ source } />,
+            this.methods.toggleVolume,
+            styles.controls.volume
         );
     }
 
@@ -1165,7 +1207,9 @@ const styles = {
             marginBottom: 10,
         },
         volume: {
-            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            // width: 80,
         },
         fullscreen: {
             flexDirection: 'row',
@@ -1236,9 +1280,9 @@ const styles = {
             justifyContent: 'flex-start',
             flexDirection: 'row',
             height: 1,
-            // marginLeft: 25,
-            // marginRight: 25,
-            // width: 150,
+            marginLeft: 20,
+            marginRight: 20,
+            width: 150,
         },
         track: {
             backgroundColor: '#333',
