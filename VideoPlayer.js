@@ -10,9 +10,11 @@ import {
     Easing,
     Image,
     View,
-    Text
+    Text,
+    PixelRatio,
 } from 'react-native';
 import _ from 'lodash';
+import Svg, { Polygon } from 'react-native-svg';
 
 export default class VideoPlayer extends Component {
 
@@ -822,6 +824,23 @@ export default class VideoPlayer extends Component {
         );
     }
 
+    renderVolumeHandlerFlap() {
+        const width = PixelRatio.roundToNearestPixel(12);
+        const height = PixelRatio.roundToNearestPixel(6);
+        const points = [
+            '0,0',
+            `${width},0`,
+            `${width},${height}`,
+            '0,0',
+        ];
+
+        return (
+            <Svg height={height} width={width}>
+                <Polygon points={points.join(' ')} fill="#FFF" />
+            </Svg>
+        );
+    }
+
     renderVolumeHandler() {
         if (this.state.showVolumeControl) {
             return (
@@ -835,6 +854,7 @@ export default class VideoPlayer extends Component {
                             { width: this.state.volumeFillWidth }
                         ]}/>
                     </View>
+                    { this.renderVolumeHandlerFlap() }
                 </View>
             );
         }
