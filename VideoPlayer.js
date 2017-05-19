@@ -727,7 +727,8 @@ export default class VideoPlayer extends Component {
                 let state = this.state;
                 const touchPosition = evt.nativeEvent.locationX;
                 this.setVolumePosition( touchPosition );
-                state.volume = evt.nativeEvent.locationX / 100;
+                state.volumeOffset = touchPosition;
+                state.volume = this.calculateVolumeFromVolumePosition();
                 if ( state.volume <= 0 ) {
                     state.muted = true;
                 } else {
@@ -743,9 +744,9 @@ export default class VideoPlayer extends Component {
              */
             onPanResponderMove: ( evt, gestureState ) => {
                 let state = this.state;
-                const touchPosition = evt.nativeEvent.locationX;
+                const touchPosition = state.volumeOffset + gestureState.dx;
                 this.setVolumePosition( touchPosition );
-                state.volume = evt.nativeEvent.locationX / 100;
+                state.volume = this.calculateVolumeFromVolumePosition();
                 if ( state.volume <= 0 ) {
                     state.muted = true;
                 } else {
@@ -758,6 +759,9 @@ export default class VideoPlayer extends Component {
              * Update the offset...
              */
             onPanResponderRelease: ( evt, gestureState ) => {
+                let state = this.state;
+                state.volumeOffset = state.volumePosition;
+                this.setState( state );
             }
         });
     }
