@@ -831,7 +831,7 @@ export default class VideoPlayer extends Component {
         return this.renderControl(
             <Image
                 source={ require( './assets/img/back.png' ) }
-                style={[styles.controls.back, { resizeMode: 'contain' }]}
+                style={{ resizeMode: 'contain' }}
             />,
             this.methods.onBack,
             styles.controls.back
@@ -883,7 +883,10 @@ export default class VideoPlayer extends Component {
     renderVolume() {
         let source = this.state.volume <= 0 ? require( './assets/img/nosound.png' ) : require( './assets/img/volume.png' );
         return this.renderControl(
-            <Image source={ source } />,
+            <Image
+                source={ source }
+                style={{ resizeMode: 'contain' }}
+            />,
             this.methods.toggleVolume,
             styles.controls.volume
         );
@@ -994,7 +997,10 @@ export default class VideoPlayer extends Component {
     renderPlayPause() {
         let source = this.state.paused === true ? require( './assets/img/play.png' ) : require( './assets/img/pause.png' );
         return this.renderControl(
-            <Image source={ source } />,
+            <Image
+                source={ source }
+                style={{ resizeMode: 'contain' }}
+            />,
             this.methods.togglePlayPause,
             styles.controls.playPause
         );
