@@ -831,7 +831,7 @@ export default class VideoPlayer extends Component {
         return this.renderControl(
             <Image
                 source={ require( './assets/img/back.png' ) }
-                style={ styles.controls.back }
+                style={[styles.controls.back, { resizeMode: 'contain' }]}
             />,
             this.methods.onBack,
             styles.controls.back
@@ -1236,7 +1236,6 @@ const styles = {
         volume: {
             alignItems: 'center',
             justifyContent: 'center',
-            // width: 80,
         },
         fullscreen: {
             flexDirection: 'row',
@@ -1244,7 +1243,6 @@ const styles = {
         playPause: {
             alignItems: 'center',
             justifyContent: 'center',
-            // width: 80,
         },
         title: {
             alignItems: 'center',
@@ -1258,7 +1256,6 @@ const styles = {
         timer: {
             alignItems: 'center',
             justifyContent: 'center',
-            // width: 80,
         },
         timerText: {
             backgroundColor: 'transparent',
