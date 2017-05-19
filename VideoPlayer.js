@@ -15,12 +15,12 @@ import {
 } from 'react-native';
 import _ from 'lodash';
 import Svg, { Polygon } from 'react-native-svg';
+import Orientation from 'react-native-orientation';
 
 export default class VideoPlayer extends Component {
 
     constructor( props ) {
         super( props );
-
         /**
          * All of our values that are updated by the
          * methods and listeners in this class
@@ -51,6 +51,7 @@ export default class VideoPlayer extends Component {
             currentTime: 0,
             error: false,
             duration: 0,
+            orientation: 'PORTRAIT',
         };
 
         /**
@@ -433,6 +434,17 @@ export default class VideoPlayer extends Component {
         }
     }
 
+    _orientationDidChange = (orientation) => {
+        this.setState({ orientation });
+    }
+
+    getFlexValuesByOrientation = () => {
+        if (this.state.orientation === 'LANDSCAPE') {
+            return [0.08, 0.10, 0.64, 0.10, 0.08];
+        }
+        return [0.12, 0.15, 0.46, 0.15, 0.12];
+    }
+
     /**
      * Calculate the time to show in the timer area
      * based on if they want to see time remaining
@@ -640,6 +652,7 @@ export default class VideoPlayer extends Component {
         state.volumeOffset = position;
 
         this.setState( state );
+        Orientation.addOrientationListener(this._orientationDidChange);
     }
 
     /**
@@ -647,6 +660,7 @@ export default class VideoPlayer extends Component {
      * timeout less it fire in the prev/next scene
      */
     componentWillUnmount() {
+        Orientation.removeOrientationListener(this._orientationDidChange);
         this.clearControlTimeout();
     }
 
@@ -825,8 +839,8 @@ export default class VideoPlayer extends Component {
     }
 
     renderVolumeHandlerFlap() {
-        const width = PixelRatio.roundToNearestPixel(12);
-        const height = PixelRatio.roundToNearestPixel(6);
+        const width = PixelRatio.roundToNearestPixel(25);
+        const height = PixelRatio.roundToNearestPixel(12);
         const points = [
             '0,0',
             `${width},0`,
@@ -844,15 +858,17 @@ export default class VideoPlayer extends Component {
     renderVolumeHandler() {
         if (this.state.showVolumeControl) {
             return (
-                <View
-                    style={ styles.volume.popover }
-                    { ...this.player.volumePanResponder.panHandlers }
-                >
-                    <View style={ styles.volume.container }>
-                        <View style={[
-                            styles.volume.track,
-                            { width: this.state.volumeFillWidth }
-                        ]}/>
+                <View style={ styles.volume.popover }>
+                    <View
+                        style={ styles.volume.bar }
+                        { ...this.player.volumePanResponder.panHandlers }
+                    >
+                        <View style={ styles.volume.container }>
+                            <View style={[
+                                styles.volume.track,
+                                { width: this.state.volumeFillWidth }
+                            ]}/>
+                        </View>
                     </View>
                     { this.renderVolumeHandlerFlap() }
                 </View>
@@ -889,6 +905,7 @@ export default class VideoPlayer extends Component {
      * Render bottom control group and wrap it in a holder
      */
     renderBottomControls() {
+        const flexValues = this.getFlexValuesByOrientation();
         return(
             <Animated.View style={[
                 styles.controls.bottom,
@@ -897,31 +914,31 @@ export default class VideoPlayer extends Component {
                     marginBottom: this.animations.bottomControl.marginBottom,
                 }
             ]}>
-            <Image
-                source={ require( './assets/img/bottom-vignette.png' ) }
-                style={[ styles.controls.column, styles.controls.vignette,
-            ]}>
-                <View style={[
-                    styles.controls.column,
-                    styles.controls.bottomControlGroup
+                <Image
+                    source={ require( './assets/img/bottom-vignette.png' ) }
+                    style={[ styles.controls.column, styles.controls.vignette,
                 ]}>
-                    <View style={{ flex: 0.12 }}>
-                        { this.renderPlayPause() }
+                    <View style={[
+                        styles.controls.column,
+                        styles.controls.bottomControlGroup
+                    ]}>
+                        <View style={{ flex: flexValues[0] }}>
+                            { this.renderPlayPause() }
+                        </View>
+                        <View style={{ flex: flexValues[1] }}>
+                            { this.renderTimer(false) }
+                        </View>
+                        <View style={{ flex: flexValues[2] }}>
+                            { this.renderSeekbar() }
+                        </View>
+                        <View style={{ flex: flexValues[3] }}>
+                            { this.renderTimer(true) }
+                        </View>
+                        <View style={{ flex: flexValues[4] }}>
+                            { this.renderVolume() }
+                        </View>
                     </View>
-                    <View style={{ flex: 0.15 }}>
-                        { this.renderTimer(false) }
-                    </View>
-                    <View style={{ flex: 0.46 }}>
-                        { this.renderSeekbar() }
-                    </View>
-                    <View style={{ flex: 0.15 }}>
-                        { this.renderTimer(true) }
-                    </View>
-                    <View style={{ flex: 0.12 }}>
-                        { this.renderVolume() }
-                    </View>
-                </View>
-            </Image>
+                </Image>
             { this.renderVolumeHandler() }
             </Animated.View>
         );
@@ -1288,9 +1305,12 @@ const styles = {
             backgroundColor: '#dbe2e9',
         },
         popover: {
+            alignItems: 'flex-end',
             position: 'absolute',
-            bottom: 60,
+            bottom: 55,
             right: 35,
+        },
+        bar: {
             backgroundColor: '#FFF',
         },
         track: {
