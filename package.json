@@ -21,10 +21,10 @@
   "dependencies": {
     "lodash": "^4.16.4",
     "react-native-orientation": "git@github.com:smalltownheroes/react-native-orientation.git",
-    "react-native-svg": "^5.1.8",
-    "react-native-video": "^1.0.0"
+    "react-native-svg": "5.1.8",
+    "react-native-video": "1.0.0"
   },
   "peerDependencies": {
-    "react-native": "^0.42.0"
+    "react-native": "0.43.3"
   }
 }
