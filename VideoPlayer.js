@@ -784,7 +784,7 @@ export default class VideoPlayer extends Component {
      * consistent <TouchableHighlight>
      * wrapper and styling.
      */
-    renderControl( children, callback, style = {} ) {
+    renderControl( children, callback, style = {}, label ) {
         return (
             <TouchableHighlight
                 underlayColor="transparent"
@@ -797,6 +797,8 @@ export default class VideoPlayer extends Component {
                     styles.controls.control,
                     style
                 ]}
+                accessible={true}
+                accessibilityLabel={label}
             >
                 { children }
             </TouchableHighlight>
@@ -838,7 +840,8 @@ export default class VideoPlayer extends Component {
                 style={{ resizeMode: 'contain' }}
             />,
             this.methods.onBack,
-            styles.controls.back
+            styles.controls.back,
+            'Terug naar weetje',
         );
     }
 
@@ -892,7 +895,8 @@ export default class VideoPlayer extends Component {
                 style={{ resizeMode: 'contain' }}
             />,
             this.methods.toggleVolume,
-            styles.controls.volume
+            styles.controls.volume,
+            'Volume knop',
         );
     }
 
@@ -904,7 +908,8 @@ export default class VideoPlayer extends Component {
         return this.renderControl(
             <Image source={ source } />,
             this.methods.toggleFullscreen,
-            styles.controls.fullscreen
+            styles.controls.fullscreen,
+            'Inzoomen'
         );
     }
 
@@ -1006,7 +1011,8 @@ export default class VideoPlayer extends Component {
                 style={{ resizeMode: 'contain' }}
             />,
             this.methods.togglePlayPause,
-            styles.controls.playPause
+            styles.controls.playPause,
+            'Start en pauze'
         );
     }
 
@@ -1042,7 +1048,8 @@ export default class VideoPlayer extends Component {
                 { this.calculateTime(remaining) }
             </Text>,
             () => {},
-            styles.controls.timer
+            styles.controls.timer,
+            'Tijdsaanduiding'
         );
     }
 
