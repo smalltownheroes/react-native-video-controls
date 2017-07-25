@@ -73,6 +73,7 @@ export default class VideoPlayer extends Component {
             onScreenPress: this._onScreenPress.bind( this ),
             onLoadStart: this._onLoadStart.bind( this ),
             onProgress: this._onProgress.bind( this ),
+            onPause: this.props.onPause || this._onPause.bind( this ),
             onLoad: this._onLoad.bind( this ),
         };
 
@@ -187,7 +188,9 @@ export default class VideoPlayer extends Component {
             const position = this.calculateSeekerPosition();
             this.setSeekerPosition( position );
         }
-
+        if (this.props.onProgress) {
+            this.props.onProgress(data);
+        }
         this.setState( state );
     }
 
@@ -198,6 +201,8 @@ export default class VideoPlayer extends Component {
      * new page.
      */
     _onEnd() {}
+
+    _onPause() {}
 
     /**
      * Set the error state to true which then
@@ -401,6 +406,7 @@ export default class VideoPlayer extends Component {
     _togglePlayPause() {
         let state = this.state;
         state.paused = ! state.paused;
+        this.events.onPause(state.paused);
         this.setState( state );
     }
 
