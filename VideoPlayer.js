@@ -152,6 +152,9 @@ export default class VideoPlayer extends Component {
         let state = this.state;
         state.loading = true;
         this.loadAnimation();
+        if (this.props.onLoadStart) {
+            this.props.onLoadStart();
+        }
         this.setState( state );
     }
 
@@ -167,6 +170,11 @@ export default class VideoPlayer extends Component {
 
         state.duration = data.duration;
         state.loading = false;
+
+        if (this.props.onLoad) {
+            this.props.onLoad(data);
+        }
+
         this.setState( state );
 
         if ( state.showControls ) {
