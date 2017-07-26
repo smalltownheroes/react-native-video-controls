@@ -1131,7 +1131,12 @@ export default class VideoPlayer extends Component {
                         onProgress={ this.events.onProgress }
                         onError={ this.events.onError }
                         onLoad={ this.events.onLoad }
-                        onEnd={ this.events.onEnd }
+                        onEnd={ () => {
+                            if (!this.ended) {
+                                this.events.onEnd();
+                                this.ended = true;
+                            }
+                        }}
 
                         style={[ styles.player.video, this.styles.videoStyle ]}
 
